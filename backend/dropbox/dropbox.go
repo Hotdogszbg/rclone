@@ -86,6 +86,8 @@ const (
 	// by default.
 	defaultChunkSize = 48 * fs.MebiByte
 	maxChunkSize     = 150 * fs.MebiByte
+	// Max length of filename parts: https://help.dropbox.com/installs-integrations/sync-uploads/files-not-syncing
+	maxFileNameLength = 255
 )
 
 var (
@@ -1434,6 +1436,10 @@ func (o *Object) Update(ctx context.Context, in io.Reader, src fs.ObjectInfo, op
 	commitInfo.Mode.Tag = "overwrite"
 	// The Dropbox API only accepts timestamps in UTC with second precision.
 	commitInfo.ClientModified = src.ModTime(ctx).UTC().Round(time.Second)
+	// Don't attempt to filenames that are too long
+	if len(path.Base(commitInfo.Path)) > maxFileNameLength {
+		return fserrors.NoRetryError(fs.ErrorFileNameTooLong)
+	}
 
 	size := src.Size()
 	var err error
