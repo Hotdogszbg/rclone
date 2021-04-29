@@ -1072,7 +1072,7 @@ func (f *Fs) Copy(ctx context.Context, src fs.Object, remote string) (dst fs.Obj
 	}
 	dstLeaf = f.opt.Enc.FromStandardName(dstLeaf)
 
-	sameName := strings.ToLower(srcLeaf) == strings.ToLower(dstLeaf)
+	sameName := strings.EqualFold(srcLeaf, dstLeaf)
 	if sameName && srcParentID == dstParentID {
 		return nil, errors.Errorf("copy: can't copy to a file in the same directory whose name only differs in case: %q vs %q", srcLeaf, dstLeaf)
 	}

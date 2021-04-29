@@ -1038,7 +1038,7 @@ func (f *Fs) Copy(ctx context.Context, src fs.Object, remote string) (fs.Object,
 	if srcObj.fs == f {
 		srcPath := srcObj.rootPath()
 		dstPath := f.rootPath(remote)
-		if strings.ToLower(srcPath) == strings.ToLower(dstPath) {
+		if strings.EqualFold(srcPath, dstPath) {
 			return nil, errors.Errorf("can't copy %q -> %q as are same name when lowercase", srcPath, dstPath)
 		}
 	}
